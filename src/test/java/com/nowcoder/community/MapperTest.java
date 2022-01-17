@@ -20,6 +20,12 @@ public class MapperTest {
         User user = userMapper.selectById(101);
         System.out.println(user);
     }
+    @Test
+    public void testSelectEmail(){
+        User user = userMapper.selectByEmail("3301056761@qq.com");
+        System.out.println(user);
+    }
+
 }
 
 

@@ -18,7 +18,6 @@ import java.util.Date;
 class CommunityApplicationTests implements ApplicationContextAware{
 
 	private ApplicationContext applicationContext;
-
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
