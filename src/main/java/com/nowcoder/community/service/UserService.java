@@ -101,4 +101,11 @@ public class UserService implements CommunityConstant{
             return ACTIVATION_FAILURE;
         }
     }
+
+    public int uploadHeaderUrl(int userId, String headerUrl){
+        return userMapper.updateHeader(userId, headerUrl);
+    }
+    public int updatePassword(int userId, String password){
+        return userMapper.updatePasssword(userId, password);
+    }
 }

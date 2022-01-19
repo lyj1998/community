@@ -11,6 +11,6 @@ public interface UserMapper {
     User selectByEmail(String email);
     int insertUser(User user);
     int updateStatus(@Param("id" ) int id, @Param("status") int status);
-    int updateHeader(int id, String headerUrl);
-    int updatePasssword(int id, String password);
+    int updateHeader(@Param("id") int id, @Param("headerUrl") String headerUrl);
+    int updatePasssword(@Param("id") int id, @Param("password") String password);
 }
