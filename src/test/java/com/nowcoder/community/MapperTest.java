@@ -1,7 +1,9 @@
 package com.nowcoder.community;
 
+import com.nowcoder.community.dao.CommentMapper;
 import com.nowcoder.community.dao.LoginTicketMapper;
 import com.nowcoder.community.dao.UserMapper;
+import com.nowcoder.community.entity.Comment;
 import com.nowcoder.community.entity.LoginTicket;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.util.CommunityUtil;
@@ -13,6 +15,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -23,6 +26,9 @@ public class MapperTest {
 
     @Autowired
     private LoginTicketMapper loginTicketMapper;
+
+    @Autowired
+    private CommentMapper commentMapper;
     @Test
     public  void  InsertTest(){
         LoginTicket loginTicket = new LoginTicket();
@@ -56,6 +62,11 @@ public class MapperTest {
         System.out.println(user);
     }
 
+    @Test
+    public void testselectCommentsByEntity(){
+        List<Comment> comment = commentMapper.selectCommentsByEntity(1, 228, 0, 2);
+        System.out.println(comment);
+    }
 }
 
 

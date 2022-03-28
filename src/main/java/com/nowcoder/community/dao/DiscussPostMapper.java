@@ -20,4 +20,7 @@ public interface DiscussPostMapper {
     //如果需要动态拼接条件（<if>里使用）并且这个方法有且只有一个参数需要用@Param起别名
     //@Param用于给参数起别名
     int selectDiscussPostRows(@Param("userId") int userId);
+    int insertDisscussPost(DiscussPost discussPost);
+    DiscussPost selectDiscussPostById(@Param("id")int id);
+    int updateCommentCount(@Param("id") int id, @Param("commentCount") int CommentCount);
 }

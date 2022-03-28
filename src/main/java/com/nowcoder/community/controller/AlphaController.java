@@ -1,6 +1,7 @@
 package com.nowcoder.community.controller;
 
 import com.nowcoder.community.service.AlphaService;
+import com.nowcoder.community.util.CommunityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,6 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sound.midi.Soundbank;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -114,11 +116,12 @@ public class AlphaController {
         map.put("age", 19);
         return map;
     }
-
-
-
-
-
-
+    @RequestMapping(path = "/ajax", method = RequestMethod.POST)
+    @ResponseBody
+    public String testAjax(String name, String age){
+        System.out.println(name);
+        System.out.println(age);
+        return CommunityUtil.getJsonString(0, "操作成功");
+    }
 
 }
