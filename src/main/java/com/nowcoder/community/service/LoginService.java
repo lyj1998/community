@@ -5,8 +5,10 @@ import com.nowcoder.community.dao.UserMapper;
 import com.nowcoder.community.entity.LoginTicket;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.util.CommunityUtil;
+import com.nowcoder.community.util.RedisUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -14,10 +16,12 @@ import java.util.HashMap;
 import java.util.Map;
 @Service
 public class LoginService {
-    @Autowired
-    private LoginTicketMapper loginTicketMapper;
+//    @Autowired
+//    private LoginTicketMapper loginTicketMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     public Map<String, Object> login(String username, String password, int expiredSeconds){
         Map<String, Object> map = new HashMap<>();
@@ -53,17 +57,27 @@ public class LoginService {
         loginTicket.setTicket(CommunityUtil.generateUUID());
         loginTicket.setStatus(0);
         loginTicket.setExpired(new Date(System.currentTimeMillis()+expiredSeconds));
-        loginTicketMapper.insertLoginTicket(loginTicket);
+//        loginTicketMapper.insertLoginTicket(loginTicket);
+        String redisKey = RedisUtil.getTicketKey(loginTicket.getTicket());
+        redisTemplate.opsForValue().set(redisKey, loginTicket);
         map.put("loginTicket", loginTicket.getTicket());
         return map;
     }
     //退出 将登录凭证修改为失效状态
     public void logout(String ticket){
         //1表示无效
-        loginTicketMapper.updateStatus(ticket,1);
+//        loginTicketMapper.updateStatus(ticket,1);
+        String redisKey = RedisUtil.getTicketKey(ticket);
+        LoginTicket loginTicket= (LoginTicket) redisTemplate.opsForValue().get(redisKey);
+        loginTicket.setStatus(1);
+        redisTemplate.opsForValue().set(redisKey, loginTicket);
+
     }
 
     public LoginTicket findLoginTicketMapper(String ticket) {
-        return loginTicketMapper.selectByTicket(ticket);
+
+//        return loginTicketMapper.selectByTicket(ticket);
+        String redisKey = RedisUtil.getTicketKey(ticket);
+        return (LoginTicket) redisTemplate.opsForValue().get(redisKey);
     }
 }

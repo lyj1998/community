@@ -2,7 +2,10 @@ package com.nowcoder.community.controller;
 
 import com.nowcoder.community.annotation.LoginRequired;
 import com.nowcoder.community.entity.User;
+import com.nowcoder.community.service.FollowService;
+import com.nowcoder.community.service.LikeService;
 import com.nowcoder.community.service.UserService;
+import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
 import com.nowcoder.community.util.HostHolder;
 import com.sun.org.apache.xml.internal.resolver.helpers.PublicId;
@@ -27,7 +30,7 @@ import java.io.InputStream;
 
 @Controller
 @RequestMapping("/user")
-public class UserController {
+public class UserController implements CommunityConstant{
     @Autowired
     UserService userService;
     @Value("${server.servlet.context-path}")
@@ -38,6 +41,10 @@ public class UserController {
     private String uploadPath;
     @Autowired
     private HostHolder hostHolder;
+    @Autowired
+    private LikeService likeService;
+    @Autowired
+    private FollowService followService;
     private Logger logger = LoggerFactory.getLogger(UserController.class);
     @LoginRequired
     @RequestMapping(path="/setting", method = RequestMethod.GET)
@@ -71,7 +78,7 @@ public class UserController {
         //http://localhost:8080/community/user/header/filename
         String headerUrl = domain+contextPath+"/user/header/"+fileName;
         User user = hostHolder.getUser();
-        System.out.println(user);
+        //System.out.println(user);
         userService.uploadHeaderUrl(user.getId(), headerUrl);
         return "redirect:/user/setting";
     }
@@ -122,5 +129,30 @@ public class UserController {
         newPassword = CommunityUtil.md5(newPassword+user.getSalt());
         userService.updatePassword(user.getId(),newPassword);
         return "redirect:/logout";
+    }
+    @RequestMapping(path = "/profile/{userId}", method = RequestMethod.GET)
+    public String getProfilePage(@PathVariable("userId")int userId, Model model){
+        User user = userService.findUserById(userId);
+        if (user == null){
+            throw new RuntimeException("该用户不存在");
+        }
+        //用户
+        //关注数量
+        long followeeCount = followService.findFolloweeCount(user.getId(), ENTITY_TYPE_USER);
+        model.addAttribute("followeeCount", followeeCount);
+        //粉丝数量
+        long followerCount = followService.findFollowerCount(ENTITY_TYPE_USER, user.getId());
+        model.addAttribute("followerCount", followerCount);
+        System.out.println(user.getId());
+        //当前用户是否关注
+        if(hostHolder.getUser()!=null){
+            boolean hasFollowed = followService.hasFollowed(hostHolder.getUser().getId(), ENTITY_TYPE_USER, userId);
+            model.addAttribute("hasFollowed", hasFollowed);
+        }
+
+        model.addAttribute("user", user);
+        int likeCount = likeService.findUserLikeCount(user.getId());
+        model.addAttribute("likeCount", likeCount);
+        return "/site/profile";
     }
 }
