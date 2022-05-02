@@ -21,4 +21,12 @@ public interface MessageMapper {
     int insertMessage(Message message);
     //将未读消息设置为已读
     int updateStatus(@Param("ids") List<Integer> ids, @Param("status") int status);
+    //查询某个主题下最新的通知
+    Message selectLatestNotice(@Param("userId") int userId, @Param("topic") String topic);
+    //查询某个主题所包含的通知数量
+    int selectNoticeCount(@Param("userId") int userId, @Param("topic") String topic);
+    //查询未读的通知数量
+    int selectNoticeUnreadCount(@Param("userId") int userId, @Param("topic") String topic);
+    //查询某个主题所包含的通知列表
+    List<Message> selectNotices(@Param("userId") int userId, @Param("topic") String topic, @Param("offset") int offset, @Param("limit") int limit);
 }

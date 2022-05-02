@@ -23,6 +23,9 @@ public class CommentService {
     public int findCommentsCount(int entityType, int entityId){
         return commentMapper.selectCountByEntity(entityType, entityId);
     }
+    public Comment findCommentById(int commentId){
+        return commentMapper.selectCommentById(commentId);
+    }
     public int addComment(Comment comment){
         if (comment == null){
             throw new IllegalArgumentException("评论不能为空");

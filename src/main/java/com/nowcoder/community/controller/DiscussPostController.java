@@ -1,9 +1,7 @@
 package com.nowcoder.community.controller;
 
-import com.nowcoder.community.entity.Comment;
-import com.nowcoder.community.entity.DiscussPost;
-import com.nowcoder.community.entity.Page;
-import com.nowcoder.community.entity.User;
+import com.nowcoder.community.entity.*;
+import com.nowcoder.community.event.EventProducer;
 import com.nowcoder.community.service.CommentService;
 import com.nowcoder.community.service.DisscussPostService;
 import com.nowcoder.community.service.LikeService;
@@ -22,6 +20,7 @@ import java.util.*;
 
 import static com.nowcoder.community.util.CommunityConstant.ENTITY_TYPE_COMMENT;
 import static com.nowcoder.community.util.CommunityConstant.ENTITY_TYPE_POST;
+import static com.nowcoder.community.util.CommunityConstant.TOPIC_PUBLISH;
 
 @Controller
 @RequestMapping("/discuss")
@@ -36,6 +35,8 @@ public class DiscussPostController {
     private CommentService commentService;
     @Autowired
     private LikeService likeService;
+    @Autowired
+    private EventProducer eventProducer;
     @RequestMapping(path = "/add", method = RequestMethod.POST)
     @ResponseBody
     public String addDiscussPost(String title, String content){
@@ -50,6 +51,13 @@ public class DiscussPostController {
         post.setContent(content);
         post.setCreateTime(new Date());
         disscussPostService.addDiscussPost(post);
+        //发帖异步处理为了在es中增加帖子
+        Event event = new Event()
+                .setTopic(TOPIC_PUBLISH)
+                .setUserId(user.getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(post.getId());
+        eventProducer.fireEvent(event);
         //报错的情况统一处理
         return CommunityUtil.getJsonString(0, "发布成功");
     }
